@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import urllib2
 
 import requests
 
@@ -16,9 +15,9 @@ def getPageSoup(url):
     return BeautifulSoup(r.text, 'html.parser')
 
 def main():
-    url = 'http://www.ifccenter.com/'
+    # url = 'https://www.amctheatres.com/movie-theatres/new-york-city/amc-empire-25/showtimes/all/2018-01-16/amc-empire-25/all'
+    url = 'http://www.imdb.com/showtimes/cinema/US/ci0010613?ref_=shlc_tny_th'
     print getPageSoup(url)
-
 
 if __name__ == '__main__':
     main()

@@ -106,11 +106,10 @@ def putMovieOnCalendar(movie):
 
     for showtime in movie.showtimes:
         endtime = showtime + timedelta(hours=2)
-        description = '{0}\n\nDouban: {1}\n{2}\n'.format(movie.show_url, movie.douban_rating, movie.douban_url, )
         event = {
             'summary': movie.title,
             'location': movie.theater,
-            'description': description,
+            'description': presentMovie(movie),
             'start': {
                 'dateTime': showtime.isoformat(),
                 'timeZone': 'America/New_York',
@@ -125,8 +124,21 @@ def putMovieOnCalendar(movie):
         }
         if movie.douban_rating >= 9.0:
             event['colorId'] = '5'  # orange-ish color
+        elif movie.douban_rating > 8.5:
+            event['colorId'] = '6'  #
 
         response = service.events().insert(calendarId='primary', body=event).execute()
+
+def presentMovie(movie):
+    return '''Show page: {showUrl}\n\nDirector: {directors}\nYear: {year}\nIMDB: {imdb}\nDouban: {douban}\nDouban link: {douban_link}\n'''\
+    .format(
+        showUrl=movie.show_url,
+        directors=movie.directors,
+        year=movie.year if movie.year is not None else 'n/a',
+        imdb=movie.imdb_rating if movie.imdb_rating is not None else 'n/a',
+        douban=movie.douban_rating,
+        douban_link=movie.douban_url)
+
 
 
 def create_movie_event():

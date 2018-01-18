@@ -15,6 +15,10 @@ FILM_FORUM_NAME = 'Film Forum'
 
 # input: the soup created by the 'urgent' container on the movie page
 def parseDirectors(soup):
+    if soup is None:
+        print 'looks like we cannot find the directors for this movie...'
+        return
+
     directors = []
     for info in soup.findChildren(recursive=False):
         if DIRECTOR_KEY_WORD in info.text.lower():

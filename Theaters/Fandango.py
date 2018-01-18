@@ -6,6 +6,8 @@ import Common
 import Movie
 import re
 
+import requests
+
 def parseMovie(input_date, movie_soup):
     movie = Movie.Movie()
     movie.showdate = input_date
@@ -32,8 +34,8 @@ def parseMovie(input_date, movie_soup):
     return movie
 
 def getMoviesByDate(input_date):
-    soup = Common.getPageSoup(HOME_PAGE_URL.format(date=input_date))
-    print soup
+    soup = Common.getPageSoup('https://www.amctheatres.com/movie-theatres/new-york-city/amc-empire-25/showtimes/all/2018-01-16/amc-empire-25/all')
+    print(soup)
 
     movies = []
     #
@@ -41,13 +43,13 @@ def getMoviesByDate(input_date):
     #         .find('ul').findChildren(recursive=False):
     #     movies.append(parseMovie(input_date, movie_soup))
 
-    print 'Found {0} movies from {1} on {2}'.format(len(movies), 'AMC Empire 25', input_date)
-    return movies
+    # print 'Found {0} movies from {1} on {2}'.format(len(movies), 'AMC Empire 25', input_date)
+    # return movies
 
 def main():
     date = '2018-01-16'
-    theater_url = 'https://www.fandango.com/amc-empire-25-aaore/theater-page'
-    print Common.getPageSoup(theater_url)
+    getMoviesByDate(date)
+
 
 
 if __name__ == '__main__':

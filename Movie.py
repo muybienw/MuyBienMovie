@@ -15,6 +15,7 @@ class Movie:
         self.theater = None
         self.showtimes = []
         self.douban_rating = None
+        self.imdb_rating = None
         self.douban_url = None
         self.year = None
         self.description = None
@@ -35,6 +36,8 @@ class Movie:
             info += 'showtimes: ' + str(self.showtimes) + '\n'
         if self.douban_rating:
             info += 'douban_rating: ' + str(self.douban_rating) + '\n'
+        if self.imdb_rating:
+            info += 'imdb_rating: ' + str(self.imdb_rating) + '\n'
         if self.douban_url:
             info += 'douban_url: ' + self.douban_url + '\n'
         if self.year:
@@ -63,6 +66,8 @@ class Movie:
             info += 'showtimes: ' + str(self.showtimes) + '\n'
         if self.douban_rating:
             info += 'douban_rating: ' + str(self.douban_rating) + '\n'
+        if self.imdb_rating:
+            info += 'imdb_rating: ' + str(self.imdb_rating) + '\n'
         if self.douban_url:
             info += 'douban_url: ' + self.douban_url + '\n'
         if self.year:

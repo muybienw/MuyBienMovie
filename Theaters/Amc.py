@@ -1,5 +1,9 @@
 #-*- coding: utf-8 -*-
 
+from bs4 import BeautifulSoup
+
+import requests
+
 from datetime import datetime
 
 import Common
@@ -47,9 +51,16 @@ def getMoviesByDate(input_date):
     print 'Found {0} movies from {1} on {2}'.format(len(movies), 'AMC Empire 25', input_date)
     return movies
 
+def getShowTimes():
+    headers = {'X-AMC-Vendor-Key': '31dd5ae1-9562-4b1f-b718-f8b1a3a97492'}
+    url = 'https://api.amctheatres.com//v2/theatres/42/showtimes'
+
+    r = requests.get(url, headers=headers)
+    print r
+
+
 def main():
-    date = '2018-01-16'
-    print getMoviesByDate(date)
+    getShowTimes()
 
 
 if __name__ == '__main__':
