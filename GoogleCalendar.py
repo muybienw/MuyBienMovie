@@ -130,16 +130,7 @@ def putMovieOnCalendar(movie):
         response = service.events().insert(calendarId='primary', body=event).execute()
 
 def presentMovie(movie):
-    return '''Show page: {showUrl}\n\nDirector: {directors}\nYear: {year}\nIMDB: {imdb}\nDouban: {douban}\nDouban link: {douban_link}\n'''\
-    .format(
-        showUrl=movie.show_url,
-        directors=movie.directors,
-        year=movie.year if movie.year is not None else 'n/a',
-        imdb=movie.imdb_rating if movie.imdb_rating is not None else 'n/a',
-        douban=movie.douban_rating,
-        douban_link=movie.douban_url)
-
-
+    return str(movie)
 
 def create_movie_event():
     credentials = get_credentials()

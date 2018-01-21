@@ -1,10 +1,5 @@
-from datetime import datetime
-from datetime import time
-
 import Movie
 import sys
-import holidays
-
 import Config
 
 # return the list of black-listed movie
@@ -18,6 +13,10 @@ def makeHaveSeenFilter(blacklist):
     return haveSeenFilter
 
 def byDoubanRating(movie):
+    result = True
+    if movie.douban_rating is None:
+        print 'No douban rating for movie: {0}({1})'.format(movie.title, movie.show_url)
+
     return movie.douban_rating is not None and movie.douban_rating >= Config.DOUBAN_RATING_BOUND
 
 def filterShowTimes(movie):
@@ -25,8 +24,7 @@ def filterShowTimes(movie):
 
     available_showtimes = []
     for showtime in movie.showtimes:
-        if config['start'] <= showtime.time() \
-            and showtime.time() <= config['end']:
+        if config['start'] <= showtime.time() and showtime.time() <= config['end']:
                 available_showtimes.append(showtime)
     movie.showtimes = available_showtimes
     return movie
@@ -35,9 +33,9 @@ def byAvailableTime(movie):
     return len(movie.showtimes) > 0
 
 def filterMovies(movies):
-    movies = filter(byAvailableTime, map(filterShowTimes, movies))
-    movies = filter(makeHaveSeenFilter(getMovieBlackListSet()), movies)
     movies = filter(byDoubanRating, movies)
+    # movies = filter(byAvailableTime, map(filterShowTimes, movies))
+    # movies = filter(makeHaveSeenFilter(getMovieBlackListSet()), movies)   # Filtered in the explore module
 
     return movies
 

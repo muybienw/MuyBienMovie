@@ -56,9 +56,9 @@ def parseMovie(theater_str, input_date, movie_div):
     title_h3 = movie_div.find('div', {'class': 'info'}).find('h3')
     year_match = re.search('\((\d+)\)', title_h3.text)
     if year_match is None:
-        movie.title = title_h3.text
+        movie.setTitle(title_h3.text)
     else:
-        movie.title = title_h3.text.split('(')[0].strip()
+        movie.setTitle(title_h3.text.split('(')[0].strip())
         movie.year = year_match.group(1)
 
     # url

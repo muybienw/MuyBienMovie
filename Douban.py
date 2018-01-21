@@ -1,42 +1,47 @@
 # -*- coding: utf-8 -*-
 
-import urllib
-import urllib2
-import json
+import Movie
+import requests
 
 def searchMovie(title):
-    request = urllib2.Request('http://api.douban.com/v2/movie/search?' + urllib.urlencode({'q': title.encode('utf-8')}))
+    payload = {'q': title.encode('utf-8')}
+    response = requests.get('http://api.douban.com/v2/movie/search', params=payload)
 
-    try: response = urllib2.urlopen(request)
-    except urllib2.URLError as e:
-        print e.reason
-        print e.read()
-        return None
-
-    movies = json.load(response)
-
-    # returns the first search result
-    if len(movies['subjects']) > 0:
-        return movies['subjects'][0]
+    if response.status_code == 200:
+        return response.json()['subjects']
     else:
-        print '''[Error]: Cannot find info for movie "{0}" on Douban'''.format(title)
+        print '[Error][Douban] unable to search for query: {0}, error code: {1}'.format(response.url, response.status_code)
+
+def fillMovieInfoWithSubject(movie, subject):
+    movie.douban_rating = subject['rating']['average']
+    movie.douban_url = subject['alt']
+    movie.douban_year = subject['year']
 
 def fillMovieInfo(movie):
     result = searchMovie(movie.title)
 
-    if result is not None:
-        movie.douban_rating = result['rating']['average']
-        movie.douban_url = result['alt']
+    if result is None or len(result) == 0:
+        print '[Error][Douban] unable to find a match for {0}'.format(movie.title)
+        return
+
+    if movie.year is None:
+        fillMovieInfoWithSubject(movie, result[0])  # the best hope
+        return
+
+    for subject in result:
+        if subject['year'] == movie.year:
+            fillMovieInfoWithSubject(movie, subject)
+            return
+
+    print '[Error][Douban] no match found for {0}, year: {1}'.format(movie.title, movie.year)
 
 def main():
-    # main code starts here
+    movie = Movie.Movie()
+    movie.title = 'happy end'
+    movie.year = '1000'
+    fillMovieInfo(movie)
 
-    # movie_title = 'city lights'
-    # movie_title = 'spirited away'
-
-    # movie_title = 'close-up'
-    movie_title = 'Loving Vincent'
-    print searchMovie(movie_title)
+    print str(movie)
 
 if __name__ == '__main__':
     main()

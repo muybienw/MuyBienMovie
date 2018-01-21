@@ -5,7 +5,7 @@ from datetime import datetime
 
 DATE_FORMAT = '%Y-%m-%d'
 DIRECTOR_DELIMINATORS = '&|,| and '
-TITLE_EXTRAS = ''': Director’s Cut|: Director's Cut|: The Director's Cut|: The Director’s Cut'''
+TITLE_EXTRAS = 'director.*cut|imax'
 
 class Movie:
     def __init__(self):
@@ -18,6 +18,8 @@ class Movie:
         self.imdb_rating = None
         self.douban_url = None
         self.year = None
+        self.douban_year = None
+        self.imdb_year = None
         self.description = None
         self.show_url = None
         self.length = None
@@ -42,6 +44,10 @@ class Movie:
             info += 'douban_url: ' + self.douban_url + '\n'
         if self.year:
             info += 'year: ' + self.year + '\n'
+        if self.douban_year:
+            info += 'douban_year: ' + self.douban_year + '\n'
+        if self.imdb_year:
+            info += 'imdb_year: ' + self.imdb_year + '\n'
         if self.description:
             info += 'description: ' + self.description + '\n'
         if self.show_url:
@@ -72,6 +78,10 @@ class Movie:
             info += 'douban_url: ' + self.douban_url + '\n'
         if self.year:
             info += 'year: ' + self.year + '\n'
+        if self.douban_year:
+            info += 'douban_year: ' + self.douban_year + '\n'
+        if self.imdb_year:
+            info += 'imdb_year: ' + self.imdb_year + '\n'
         if self.description:
             info += 'description: ' + self.description + '\n'
         if self.show_url:
@@ -98,11 +108,18 @@ class Movie:
             self.directors.append(director.encode('utf-8').strip())
 
     def setTitle(self, title_str):
-        self.title = re.sub(TITLE_EXTRAS, '', title_str, flags=re.IGNORECASE)
+        if ':' in title_str:
+            if re.search(TITLE_EXTRAS, title_str.split(':')[1], flags=re.IGNORECASE) is not None:
+                self.title = title_str.split(':')[0].strip()
+                return
+        self.title = title_str.strip()
 
 def main():
-    title = '1776: Director’s Cut'
-    # print movie.title
+    title = '12 strong: the IMAX experience'
+    movie = Movie()
+    movie.setTitle(title)
+
+    print movie.title
 
 
 if __name__ == '__main__':
