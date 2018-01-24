@@ -7,31 +7,18 @@ DATE_FORMAT = '%Y-%m-%d'
 DIRECTOR_DELIMINATORS = '&|,| and '
 TITLE_EXTRAS = 'director.*cut|imax'
 
-class Showtime:
-    def __init__(self):
-        self.movie = None
-        self.theater = None
-        self.link = None
-        self.time = None
-
 class Movie:
     def __init__(self):
-        self.title = ''
-        self.directors = []
-        self.showdate = None  # string in DATE_FORMAT
-        self.theater = None
-        self.showtimes = []
-        self.douban_id = None
-        self.imdb_id = None
-        self.douban_rating = None
-        self.imdb_rating = None
-        self.douban_url = None
+        self.title = None
+        self.director = None  # string, pick the first director if multiple directors
         self.year = None
+        self.douban_url = None
+        self.douban_rating = None
         self.douban_year = None
+        self.imdb_url = None
+        self.imdb_rating = None
         self.imdb_year = None
-        self.description = None
-        self.show_url = None
-        self.length = None
+
 
     def __repr__(self):
         info = '{'
@@ -45,10 +32,6 @@ class Movie:
             info += 'showdate: ' + str(self.showdate) + '\n'
         if self.showtimes:
             info += 'showtimes: ' + str(self.showtimes) + '\n'
-        if self.douban_id:
-            info += 'douban_id: ' + str(self.douban_id) + '\n'
-        if self.imdb_id:
-            info += 'imdb_id: ' + str(self.imdb_id) + '\n'
         if self.douban_rating:
             info += 'douban_rating: ' + str(self.douban_rating) + '\n'
         if self.imdb_rating:
@@ -83,10 +66,6 @@ class Movie:
             info += 'showdate: ' + str(self.showdate) + '\n'
         if self.showtimes:
             info += 'showtimes: ' + str(self.showtimes) + '\n'
-        if self.douban_id:
-            info += 'douban_id: ' + str(self.douban_id) + '\n'
-        if self.imdb_id:
-            info += 'imdb_id: ' + str(self.imdb_id) + '\n'
         if self.douban_rating:
             info += 'douban_rating: ' + str(self.douban_rating) + '\n'
         if self.imdb_rating:
@@ -107,7 +86,6 @@ class Movie:
             info += 'length: ' + self.length + '\n'
 
         return info
-
 
     def addShowTime(self, showdate_str, showtime_str):
         showtime_trimmed_str = re.search('(\d+):(\d+)', showtime_str)

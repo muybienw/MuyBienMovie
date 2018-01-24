@@ -3,6 +3,14 @@
 import Movie
 import requests
 
+def getMovie(id):
+    response = requests.get('http://api.douban.com//v2/movie/subject/{0}'.format(id))
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print '[Error][Douban] unable to get movie by id: {0}'.format(id)
+
 def searchMovie(title):
     payload = {'q': title.encode('utf-8')}
     response = requests.get('http://api.douban.com/v2/movie/search', params=payload)
@@ -13,6 +21,7 @@ def searchMovie(title):
         print '[Error][Douban] unable to search for query: {0}, error code: {1}'.format(response.url, response.status_code)
 
 def fillMovieInfoWithSubject(movie, subject):
+    movie.douban_id = subject['id']
     movie.douban_rating = subject['rating']['average']
     movie.douban_url = subject['alt']
     movie.douban_year = subject['year']
@@ -36,12 +45,8 @@ def fillMovieInfo(movie):
     print '[Error][Douban] no match found for {0}, year: {1}'.format(movie.title, movie.year)
 
 def main():
-    movie = Movie.Movie()
-    movie.title = 'happy end'
-    movie.year = '1000'
-    fillMovieInfo(movie)
+    print 'douban!'
 
-    print str(movie)
 
 if __name__ == '__main__':
     main()

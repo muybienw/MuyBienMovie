@@ -5,7 +5,11 @@ import Common
 import Movie
 import Config
 
+import requests
+
+HOME_PREFIX = 'http://www.imdb.com/'
 FILM_PAGE_PREFIX = 'http://www.imdb.com/title/'
+SEARCH_PREFIX = 'http://www.imdb.com/find'
 
 THEATERS = {
     Config.AMC25: {
@@ -65,6 +69,7 @@ def parseMovie(theater_str, input_date, movie_div):
     url = title_h3.find('a', {'itemprop': 'url'})
     if url is not None:
         movie.show_url = FILM_PAGE_PREFIX + re.search('tt\d+', url['href']).group(0)
+        movie.imdb_url = movie.show_url
 
     # directors
     if url is not None:
@@ -76,7 +81,7 @@ def parseMovie(theater_str, input_date, movie_div):
     # rating
     rating = movie_div.find('strong', {'itemprop': 'ratingValue'})
     if rating is not None:
-     movie.imdb_rating = rating.text
+     movie.imdb_rating = float(rating.text)
 
     # showtimes
     for showtime_a in movie_div.find('div', {'class': 'showtimes'}).find_all('a', {'rel': 'nofollow'}):
@@ -100,9 +105,51 @@ def getMoviesByDate(theater_str, input_date):
         movies.append(parseMovie(theater_str, input_date, movie_div))
     return movies
 
+def fillMovieInfo(movie):
+    # find movie link first from search, using movie title
+    imdb_url = searchMoviePageByTitle(movie)
+    if imdb_url is None:
+        return movie
+
+    # fill in imdb info
+    movie.imdb_url = imdb_url
+    soup = Common.getPageSoup(imdb_url)
+
+    movie.imdb_rating = float(soup.find('span', {'itemprop': 'ratingValue'}).text)
+    movie.imdb_year = soup.find('span', {'id': 'titleYear'}).a.text
+
+    director = soup.find('span', {'itemprop': 'director'}).a.text
+
+# Returns the imdb url
+def searchMoviePageByTitle(movie):
+    payload = {'q': movie.title.encode('utf-8'), 's': 'tt'}
+    soup = Common.getPageSoup(SEARCH_PREFIX, params=payload)
+
+    if soup is None:
+        return None
+
+    for result in soup.find_all('td', {'class': 'result_text'}):
+        match = re.match('(.*)\((\d{4})\)', result.text)
+        if match is None:
+            print '[Error][IMDB]: cannot parse the search result: {0}'.format(result.text)
+        year = match.group(2)
+        if year != movie.year and year != movie.douban_year:
+            continue
+        return HOME_PREFIX + result.a['href']
+
+    print '[Error][IMDB]: no match for movie: {0}'.format(movie.title)
+    return None
+
+
 def main():
-    date = '2018-01-19'
-    getMoviesByDate(Config.CINEPOLIS, date)
+    # date = '2018-01-19'
+    # getMoviesByDate(Config.CINEPOLIS, date)
+
+    movie = Movie.Movie()
+    movie.title = '12 strong'
+    movie.year = '2018'
+
+    print fillMovieInfo(movie)
 
 if __name__ == '__main__':
     main()

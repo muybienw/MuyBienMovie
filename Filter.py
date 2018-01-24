@@ -12,12 +12,15 @@ def makeHaveSeenFilter(blacklist):
         return movie.title.lower() not in blacklist
     return haveSeenFilter
 
-def byDoubanRating(movie):
-    result = True
-    if movie.douban_rating is None:
-        print 'No douban rating for movie: {0}({1})'.format(movie.title, movie.show_url)
-
-    return movie.douban_rating is not None and movie.douban_rating >= Config.DOUBAN_RATING_BOUND
+def byRating(movie):
+    # douban_rating is always present: 0 for no rating available, returned by douban api
+    if movie.douban_rating >= Config.DOUBAN_RATING_BOUND:
+        return True
+    elif movie.imdb_rating is not None:
+        return movie.imdb_rating >= Config.IMDB_RATING_BOUND
+    else:
+        print 'No douban/imdb rating for movie: {0}({1})'.format(movie.title, movie.show_url)
+        return False
 
 def filterShowTimes(movie):
     config = Config.getConfig(movie.showdate)

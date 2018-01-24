@@ -104,10 +104,12 @@ def putMovieOnCalendar(movie):
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
+    summary = movie.title if movie.douban_rating > 0 else '[?] ' + movie.title
+
     for showtime in movie.showtimes:
         endtime = showtime + timedelta(hours=2)
         event = {
-            'summary': movie.title,
+            'summary': summary,
             'location': movie.theater,
             'description': presentMovie(movie),
             'start': {
@@ -123,9 +125,9 @@ def putMovieOnCalendar(movie):
             ],
         }
         if movie.douban_rating >= 9.0:
-            event['colorId'] = '5'  # orange-ish color
+            event['colorId'] = '6'  # red-ish color
         elif movie.douban_rating > 8.5:
-            event['colorId'] = '6'  #
+            event['colorId'] = '5'  # orange-ish color
 
         response = service.events().insert(calendarId='primary', body=event).execute()
 
