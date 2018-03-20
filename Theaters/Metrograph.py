@@ -21,13 +21,17 @@ def parseMovie(input_date, movie_soup):
     for showtime_a in movie_soup.find('div', {'class': 'showtimes'}).find_all('a'):
         movie.addShowTime(movie.showdate, showtime_a.text)
 
+    print movie.show_url
+
     # director, year
     details_soup = movie_soup.find('div', {'class': 'details'})
     if details_soup is None:
         print 'Cannot find movie details for: {0}'.format(movie.title)
-    match = re.search('director:(.*)(\d{4}) /', details_soup.text, flags=re.IGNORECASE)
-    movie.addDirectors(match.group(1))
-    movie.year = match.group(2)
+    match = re.search('director:(.*)(\d{4})', details_soup.text, flags=re.IGNORECASE)
+
+    if match is not None:
+        movie.addDirectors(match.group(1))
+        movie.year = match.group(2)
 
     return movie
 
@@ -56,7 +60,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    date = '2018-01-20'
+    date = '2018-02-04'
     print getMoviesByDate(date)
 
 

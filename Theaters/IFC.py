@@ -22,15 +22,20 @@ def parseMovie(input_date, movie_soup):
     for showtime_li in movie_soup.find('ul', {'class': 'times'}).findChildren(recursive=False):
         movie.addShowTime(movie.showdate, showtime_li.a.text)
 
+    print movie.title
+
     # director, year (hard to find this one)
     details_soup = Common.getPageSoup(movie.show_url)
-    for detail_li in details_soup.find('ul', {'class': 'film-details'}).findChildren(recursive=False):
-        label = detail_li.find('strong').text
-        if label.lower() == 'year':
-            movie.year = re.sub('year', '', detail_li.text, flags=re.IGNORECASE).strip()
-        if label.lower() == 'director':
-            movie.addDirectors(re.sub('director', '', detail_li.text, flags=re.IGNORECASE).strip())
-
+    details = details_soup.find('ul', {'class': 'film-details'})
+    if details is not None:
+        for detail_li in details.findChildren(recursive=False):
+            label = detail_li.find('strong').text
+            if label.lower() == 'year':
+                movie.year = re.sub('year', '', detail_li.text, flags=re.IGNORECASE).strip()
+            if label.lower() == 'director':
+                movie.addDirectors(re.sub('director', '', detail_li.text, flags=re.IGNORECASE).strip())
+    else:
+        print 'This doesn\'t look like a movie: {0}({1})'.format(movie.title, movie.show_url)
     return movie
 
 def getMoviesByDate(input_date):
@@ -53,7 +58,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    date = '2018-01-14'
+    date = '2018-02-12'
     print getMoviesByDate(date)
 
 

@@ -131,6 +131,79 @@ def putMovieOnCalendar(movie):
 
         response = service.events().insert(calendarId='primary', body=event).execute()
 
+def putMovieOnSpecificCalendar(movie, calendarId):
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+
+    # prepare the calendar event
+    summary = movie.title if movie.douban_rating > 0 else '[?] ' + movie.title
+
+    for i in xrange(len(movie.showtimes)):
+        showtime = movie.showtimes[i]
+        endtime = showtime + timedelta(hours=2)
+        event = {
+            'summary': summary,
+            'location': movie.theater,
+            'description': presentMovie(movie),
+            'start': {
+                'dateTime': showtime.isoformat(),
+                'timeZone': 'America/New_York',
+            },
+            'end': {
+                'dateTime': endtime.isoformat(),
+                'timeZone': 'America/New_York',
+            },
+            'attendees': [
+                # {'email': 'mubin.w@gmail.com'},
+            ],
+        }
+        if movie.douban_rating >= 8.5:
+            event['colorId'] = '6'  # red-ish color
+        elif movie.douban_rating >= 8.0:
+            event['colorId'] = '5'  # orange-ish color
+        elif movie.imdb_rating >= 8.0:
+            event['colorId'] = '4'  # ???
+
+        if i == len(movie.showtimes) - 1:
+            event['summary'] = '[!]' + event['summary']
+
+        response = service.events().insert(calendarId=calendarId, body=event).execute()
+
+
+# return the calendar id: clears the original and makes a new calendar
+def updateCalendarByName(calendarName):
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+    calendarId = getCalendarIdByName(service, calendarName)
+
+    # clear existing calendar
+    if calendarId is not None:
+        service.calendars().delete(calendarId=calendarId).execute()
+
+    # create new calendar for series
+    calendar = {
+        'summary': calendarName,
+        'timeZone': 'America/New_York'
+    }
+    created_calendar = service.calendars().insert(body=calendar).execute()
+    return created_calendar['id']
+
+
+def getCalendarIdByName(service, calendarName):
+    page_token = None
+    while True:
+        calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        for calendar_list_entry in calendar_list['items']:
+            if calendar_list_entry['summary'] == calendarName:
+                return calendar_list_entry['id']
+        page_token = calendar_list.get('nextPageToken')
+        if not page_token:
+            break
+
+    return None
+
 def presentMovie(movie):
     return str(movie)
 
@@ -196,7 +269,7 @@ def deleteAllEventsByDate(date):
 
 def main():
     date = '2018-01-13'
-    deleteAllEventsByDate(date)
+    putMovieOnSpecificCalendar(None, 'haha')
 
 if __name__ == '__main__':
     main()

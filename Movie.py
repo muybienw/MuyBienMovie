@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 DATE_FORMAT = '%Y-%m-%d'
-DIRECTOR_DELIMINATORS = '&|,| and '
+DIRECTOR_DELIMINATORS = '&|,| and |/'
 TITLE_EXTRAS = 'director.*cut|imax'
 
 class Showtime:
@@ -119,7 +119,6 @@ class Movie:
                 self.showtimes.append(datetime.strptime(showdatetime + ' AM', DATE_FORMAT + ' %I:%M %p'))
             else:
                 self.showtimes.append(datetime.strptime(showdatetime + ' PM', DATE_FORMAT + ' %I:%M %p'))
-
 
     def addDirectors(self, directors_str):
         for director in re.split(DIRECTOR_DELIMINATORS, directors_str.lower().strip()):

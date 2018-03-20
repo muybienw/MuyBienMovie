@@ -6,14 +6,10 @@ from Theaters import IFC
 from Theaters import IMDB
 from functools import partial
 
-from time import sleep
-from datetime import datetime
-
 import Douban
 import Filter
 import GoogleCalendar
 import Config
-import Movie
 import DatabaseManager
 
 import sys
@@ -30,6 +26,9 @@ EXPLORE_METHODS_LONG = {
     Config.ANGELIKA: partial(IMDB.getMoviesByDate, Config.ANGELIKA),
     Config.VILLAGE_EAST: partial(IMDB.getMoviesByDate, Config.VILLAGE_EAST),
     Config.AMC25: partial(IMDB.getMoviesByDate, Config.AMC25),
+    Config.AMC_LOWES_34: partial(IMDB.getMoviesByDate, Config.AMC_LOWES_34),
+    Config.AMC_LINCOLN_SQUARE: partial(IMDB.getMoviesByDate, Config.AMC_LINCOLN_SQUARE),
+    Config.REGAL_UNION_SQUARE: partial(IMDB.getMoviesByDate, Config.REGAL_UNION_SQUARE)
 }
 
 EXPLORE_METHODS_SHORT = {
@@ -43,6 +42,9 @@ EXPLORE_METHODS_SHORT = {
     Config.ANGELIKA: partial(IMDB.getMoviesByDate, Config.ANGELIKA),
     Config.VILLAGE_EAST: partial(IMDB.getMoviesByDate, Config.VILLAGE_EAST),
     Config.AMC25: partial(IMDB.getMoviesByDate, Config.AMC25),
+    Config.AMC_LOWES_34: partial(IMDB.getMoviesByDate, Config.AMC_LOWES_34),
+    Config.AMC_LINCOLN_SQUARE: partial(IMDB.getMoviesByDate, Config.AMC_LINCOLN_SQUARE),
+    Config.REGAL_UNION_SQUARE: partial(IMDB.getMoviesByDate, Config.REGAL_UNION_SQUARE)
 }
 
 HAVE_SEENS = Filter.makeHaveSeenFilter(Filter.getMovieBlackListSet())
@@ -82,6 +84,20 @@ def exploreByTheater(movies):
     movies = filter(Filter.byAvailableTime, map(Filter.filterShowTimes, movies))
     movies = filter(HAVE_SEENS, movies)
 
+    movies_complete = getCompleteMovies(movies)
+
+    # Step 4: filter movies by Douban/IMDB related info
+    # Step 5: put qualified movie on calendar
+    for movie in filter(Filter.byRating, movies_complete):
+        GoogleCalendar.putMovieOnCalendar(movie)
+
+
+'''
+Get complete movies with douban/imdb info. It could be:
+- load from DB.
+- fetch info from douban/imdb and write back to DB.
+'''
+def getCompleteMovies(movies):
     # Step 2: search over databse to avoid extra Douban/IMDB query
     movies_complete = []
     movies_incomplete = []
@@ -93,8 +109,8 @@ def exploreByTheater(movies):
             fillMovieInfoWithSavedMovie(movie, saved)
             movies_complete.append(movie)
 
-    print 'complete movies #: {0}'.format(len(movies_complete))
-    print 'incomplete movies #: {0}'.format(len(movies_incomplete))
+    # print 'complete movies #: {0}'.format(len(movies_complete))
+    # print 'incomplete movies #: {0}'.format(len(movies_incomplete))
     # Step 3: query Douban/IMDB to fill incomplete movies
     for movie in movies_incomplete:
         Douban.fillMovieInfo(movie)
@@ -102,12 +118,7 @@ def exploreByTheater(movies):
         DatabaseManager.addMovie(movie)
         movies_complete.append(movie)
 
-    print movies_complete
-
-    # Step 4: filter movies by Douban/IMDB related info
-    # Step 5: put qualified movie on calendar
-    for movie in filter(Filter.byRating, movies_complete):
-        GoogleCalendar.putMovieOnCalendar(movie)
+    return movies_complete
 
 
 def fillMovieInfoWithSavedMovie(movie, saved):
@@ -115,18 +126,35 @@ def fillMovieInfoWithSavedMovie(movie, saved):
     movie.douban_rating = saved['douban_rating']
     movie.douban_url = saved['douban_url']
     movie.douban_year = saved['douban_year']
-    movie.imdb_url = saved['imdb_url']
+    if 'imdb_url' in saved:
+        movie.imdb_url = saved['imdb_url']
     movie.imdb_rating = saved['imdb_rating']
     movie.imdb_year = saved['imdb_year']
 
+
+def exploreMovieBySeries(series_name, series_url):
+    movies = FilmForum.getMoviesBySeries(series_name, series_url)
+    movies_complete = getCompleteMovies(movies)
+
+    calendarId = GoogleCalendar.updateCalendarByName(series_name)
+    print 'Updated the series calendar: {0}'.format(series_name)
+    for movie in movies_complete:
+        GoogleCalendar.putMovieOnSpecificCalendar(movie, calendarId)
+        print 'Created events for movie: {0}'.format(movie.title)
+    print 'Done'
 
 def main():
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-    date = '2018-01-23'
+    # Get movies by day
+    date = '2018-03-25'
     GoogleCalendar.deleteAllEventsByDate(date)
     exlporeMovieByDate(date)
+
+    # Get movies by series
+    # series_url = 'https://filmforum.org/series/michel-piccoli-series'
+    # exploreMovieBySeries('Michel Piccoli', series_url)
 
 
 if __name__ == '__main__':

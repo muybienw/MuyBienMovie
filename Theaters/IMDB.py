@@ -16,9 +16,21 @@ THEATERS = {
         'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0010613/{0}',
         'full_name': 'AMC Empire 25',
     },
+    Config.AMC_LOWES_34: {
+        'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0011588/{0}',
+        'full_name': 'AMC Lowes 34',
+    },
+    Config.AMC_LINCOLN_SQUARE: {
+        'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0001803/{0}',
+        'full_name': 'AMC Loews Lincoln Square 13',
+    },
     Config.ANGELIKA: {
         'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0003467/{0}',
         'full_name': 'Angelika Film Center New York',
+    },
+    Config.REGAL_UNION_SQUARE: {
+        'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0007135/{0}',
+        'full_name': 'Regal Union Square',
     },
     Config.CINEPOLIS: {
         'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci41794468/{0}',
@@ -75,13 +87,15 @@ def parseMovie(theater_str, input_date, movie_div):
     if url is not None:
         movie_page_soup = Common.getPageSoup(movie.show_url)
         if movie_page_soup is not None:
-            for director_a in movie_page_soup.find('span', {'itemprop': 'director'}).find_all('span', {'itemprop': 'name'}):
-                movie.addDirectors(director_a.text)
+            director_span = movie_page_soup.find('span', {'itemprop': 'director'})
+            if director_span is not None:
+                for director_a in director_span.find_all('span', {'itemprop': 'name'}):
+                    movie.addDirectors(director_a.text)
 
     # rating
     rating = movie_div.find('strong', {'itemprop': 'ratingValue'})
-    if rating is not None:
-     movie.imdb_rating = float(rating.text)
+    if rating is not None and rating.text != '-':
+        movie.imdb_rating = float(rating.text)
 
     # showtimes
     for showtime_a in movie_div.find('div', {'class': 'showtimes'}).find_all('a', {'rel': 'nofollow'}):
@@ -115,10 +129,15 @@ def fillMovieInfo(movie):
     movie.imdb_url = imdb_url
     soup = Common.getPageSoup(imdb_url)
 
-    movie.imdb_rating = float(soup.find('span', {'itemprop': 'ratingValue'}).text)
-    movie.imdb_year = soup.find('span', {'id': 'titleYear'}).a.text
+    rating_span = soup.find('span', {'itemprop': 'ratingValue'})
+    if rating_span is not None:
+        movie.imdb_rating = float(rating_span.text)
 
-    director = soup.find('span', {'itemprop': 'director'}).a.text
+    year_span =  soup.find('span', {'id': 'titleYear'})
+    if year_span is not None:
+        movie.imdb_year =year_span.a.text
+
+    # director = soup.find('span', {'itemprop': 'director'}).a.text
 
 # Returns the imdb url
 def searchMoviePageByTitle(movie):
@@ -132,6 +151,7 @@ def searchMoviePageByTitle(movie):
         match = re.match('(.*)\((\d{4})\)', result.text)
         if match is None:
             print '[Error][IMDB]: cannot parse the search result: {0}'.format(result.text)
+            continue
         year = match.group(2)
         if year != movie.year and year != movie.douban_year:
             continue
@@ -146,7 +166,7 @@ def main():
     # getMoviesByDate(Config.CINEPOLIS, date)
 
     movie = Movie.Movie()
-    movie.title = '12 strong'
+    movie.title = 'Ashes of Time Redux'
     movie.year = '2018'
 
     print fillMovieInfo(movie)

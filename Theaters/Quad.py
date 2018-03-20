@@ -21,20 +21,21 @@ def parseMovie(input_date, movie_soup):
 
     # director, year (hard to find this one)
     details_soup = Common.getPageSoup(movie.show_url)
-    movie.addDirectors(details_soup.find('span', {'class': 'credit-name'}).text)
+    credit_name = details_soup.find('span', {'class': 'credit-name'})
+    if credit_name is not None:
+        movie.addDirectors(credit_name.text)
 
     return movie
 
 
 def getMoviesByDate(input_date):
     date = datetime.strptime(input_date, Movie.DATE_FORMAT)
-    today = date.today()
-    offset = date.day - today.day
+    offset = date.date() - datetime.now().date()
 
-    if offset > 6:
+    if offset.days > 6:
         print 'Cannot get movies more than a week later: ' + input_date
 
-    tabClass = 'date-' + str(date.day)
+    tabClass = 'date-' + (str(date.day) if date.day > 9 else '0' + str(date.day))
 
     movies = []
 
@@ -45,7 +46,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    date = '2018-01-17'
+    date = '2018-02-02'
     print getMoviesByDate(date)
 
 
