@@ -125,9 +125,11 @@ def putMovieOnCalendar(movie):
             ],
         }
         if movie.douban_rating >= 9.0:
-            event['colorId'] = '6'  # red-ish color
-        elif movie.douban_rating > 8.5:
-            event['colorId'] = '5'  # orange-ish color
+            event['colorId'] = '6'  # red
+        elif movie.douban_rating >= 8.5:
+            event['colorId'] = '4'  # light red
+        elif movie.douban_rating >= 8.0:
+            event['colorId'] = '5'  # orange
 
         response = service.events().insert(calendarId='primary', body=event).execute()
 

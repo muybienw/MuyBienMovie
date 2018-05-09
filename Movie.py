@@ -111,9 +111,7 @@ class Movie:
 
     def addShowTime(self, showdate_str, showtime_str):
         showtime_trimmed_str = re.search('(\d+):(\d+)', showtime_str)
-        if showtime_trimmed_str is None:
-            print ('invalid show time input: ' + showtime_str)
-        else:
+        if showtime_trimmed_str is not None:
             showdatetime = showdate_str + ' ' + showtime_trimmed_str.group(0)
             if 'am' in showtime_str.lower():
                 self.showtimes.append(datetime.strptime(showdatetime + ' AM', DATE_FORMAT + ' %I:%M %p'))

@@ -21,7 +21,7 @@ def parseMovie(input_date, movie_soup):
     for showtime_a in movie_soup.find('div', {'class': 'showtimes'}).find_all('a'):
         movie.addShowTime(movie.showdate, showtime_a.text)
 
-    print movie.show_url
+    # print movie.show_url
 
     # director, year
     details_soup = movie_soup.find('div', {'class': 'details'})

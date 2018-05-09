@@ -148,7 +148,7 @@ def main():
     sys.setdefaultencoding('utf8')
 
     # Get movies by day
-    date = '2018-03-25'
+    date = '2018-05-14'
     GoogleCalendar.deleteAllEventsByDate(date)
     exlporeMovieByDate(date)
 

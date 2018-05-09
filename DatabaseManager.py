@@ -13,7 +13,7 @@ def addMovie(movie):
         '[Error] writing a movie == None to database'
 
     result = MOVIE_DB.insert_one(movie.__dict__)
-    print 'Inserted one movie successfully: {0}'.format(result.inserted_id)
+    # print 'Inserted one movie successfully: {0}'.format(result.inserted_id)
 
 # Searches and returns a movie object. Returns None if no match found.
 def getMovie(movie):
