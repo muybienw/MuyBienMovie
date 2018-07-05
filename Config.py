@@ -36,35 +36,57 @@ METROGRAPH = 'Metrograph'
 
 
 THEATERS = {CINEPOLIS, AMC_LOWES_34, AMC_LINCOLN_SQUARE, REGAL_UNION_SQUARE, ANGELIKA, VILLAGE_EAST, QUAD, FILM_FORUM, WALTER_READE, IFC, ELINOR, METROGRAPH}
-NON_COMMERCIAL = {CINEPOLIS, ANGELIKA, VILLAGE_EAST, QUAD, FILM_FORUM, WALTER_READE, IFC, ELINOR, METROGRAPH, VILLAGE_EAST}
+NON_COMMERCIAL = {
+    CINEPOLIS,
+    ANGELIKA,
+    VILLAGE_EAST,
+    # QUAD,
+    # FILM_FORUM,
+    # WALTER_READE,
+    IFC,
+    # ELINOR,
+    METROGRAPH,
+    VILLAGE_EAST}
 
-WEEKDAY_THEATERS = [VILLAGE_EAST, CINEPOLIS, FILM_FORUM, IFC, QUAD, WALTER_READE, ELINOR, METROGRAPH]
+WEEKDAY_THEATERS = [
+    VILLAGE_EAST,
+    CINEPOLIS,
+
+    # TODO: add this back after August 1 2018
+    # FILM_FORUM,
+
+    IFC,
+    QUAD,
+    WALTER_READE,
+    ELINOR,
+    METROGRAPH]
+
 HOLIDAY_THEATERS = list(NON_COMMERCIAL)
 
 CONFIG_BY_WEEKDAY = {
     MONDAY: {
         'theaters': WEEKDAY_THEATERS,
-        'start': time(17),
+        'start': time(16),
         'end': time(20)
     },
     TUESDAY: {
         'theaters': WEEKDAY_THEATERS,
-        'start': time(17),
+        'start': time(16),
         'end': time(20)
     },
     WEDNESDAY: {
         'theaters': WEEKDAY_THEATERS,
-        'start': time(17),
+        'start': time(16),
         'end': time(20)
     },
     THURSDAY: {
         'theaters': WEEKDAY_THEATERS,
-        'start': time(17),
+        'start': time(16),
         'end': time(20)
     },
     FRIDAY: {
         'theaters': WEEKDAY_THEATERS,
-        'start': time(17),
+        'start': time(16),
         'end': time(20)
     },
     SATURDAY: {
@@ -91,7 +113,8 @@ def getConfig(date):
     if date in US_HOLIDAYS:
         weekday = HOLIDAY
 
-    return CONFIG_BY_WEEKDAY[weekday]
+    # return CONFIG_BY_WEEKDAY[weekday]
+    return CONFIG_BY_WEEKDAY[HOLIDAY]
 
 def main():
     date = '2018-01-15'

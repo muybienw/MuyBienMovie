@@ -17,9 +17,14 @@ import copy
 
 EXPLORE_METHODS_LONG = {
     Config.FILM_FORUM: FilmForum.getMoviesByDate,
-    Config.ELINOR: LincolnCenter.getMoviesByDate,
-    Config.WALTER_READE: LincolnCenter.getMoviesByDate,
-    Config.QUAD: Quad.getMoviesByDate,
+    # TODO: change this back to their official page
+    # Config.ELINOR: LincolnCenter.getMoviesByDate,
+    # Config.WALTER_READE: LincolnCenter.getMoviesByDate,
+    # Config.QUAD: Quad.getMoviesByDate,
+    Config.ELINOR: partial(IMDB.getMoviesByDate, Config.ELINOR),
+    Config.WALTER_READE: partial(IMDB.getMoviesByDate, Config.WALTER_READE),
+    Config.QUAD: partial(IMDB.getMoviesByDate, Config.QUAD),
+
     Config.IFC: IFC.getMoviesByDate,
     Config.METROGRAPH: Metrograph.getMoviesByDate,
     Config.CINEPOLIS: partial(IMDB.getMoviesByDate, Config.CINEPOLIS),
@@ -148,7 +153,7 @@ def main():
     sys.setdefaultencoding('utf8')
 
     # Get movies by day
-    date = '2018-05-14'
+    date = '2018-07-08'
     GoogleCalendar.deleteAllEventsByDate(date)
     exlporeMovieByDate(date)
 

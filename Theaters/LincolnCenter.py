@@ -35,6 +35,8 @@ def getMoviesByDate(input_date):
 
     movies = []
 
+    print CALENDAR_URL;
+
     soup = Common.getPageSoup(CALENDAR_URL)
     daily_schedule = soup.find('li', {'id': tabId})
 
@@ -48,7 +50,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    input_date = '2018-01-14'
+    input_date = '2018-07-01'
     print getMoviesByDate(input_date)
 
 
