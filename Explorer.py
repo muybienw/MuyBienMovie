@@ -17,13 +17,14 @@ import copy
 
 EXPLORE_METHODS_LONG = {
     Config.FILM_FORUM: FilmForum.getMoviesByDate,
-    # TODO: change this back to their official page
-    # Config.ELINOR: LincolnCenter.getMoviesByDate,
-    # Config.WALTER_READE: LincolnCenter.getMoviesByDate,
-    # Config.QUAD: Quad.getMoviesByDate,
-    Config.ELINOR: partial(IMDB.getMoviesByDate, Config.ELINOR),
-    Config.WALTER_READE: partial(IMDB.getMoviesByDate, Config.WALTER_READE),
-    Config.QUAD: partial(IMDB.getMoviesByDate, Config.QUAD),
+    Config.ELINOR: LincolnCenter.getMoviesByDate,
+    Config.WALTER_READE: LincolnCenter.getMoviesByDate,
+    Config.QUAD: Quad.getMoviesByDate,
+
+    # Load showtimes from IMDB
+    # Config.ELINOR: partial(IMDB.getMoviesByDate, Config.ELINOR),
+    # Config.WALTER_READE: partial(IMDB.getMoviesByDate, Config.WALTER_READE),
+    # Config.QUAD: partial(IMDB.getMoviesByDate, Config.QUAD),
 
     Config.IFC: IFC.getMoviesByDate,
     Config.METROGRAPH: Metrograph.getMoviesByDate,
@@ -33,7 +34,8 @@ EXPLORE_METHODS_LONG = {
     Config.AMC25: partial(IMDB.getMoviesByDate, Config.AMC25),
     Config.AMC_LOWES_34: partial(IMDB.getMoviesByDate, Config.AMC_LOWES_34),
     Config.AMC_LINCOLN_SQUARE: partial(IMDB.getMoviesByDate, Config.AMC_LINCOLN_SQUARE),
-    Config.REGAL_UNION_SQUARE: partial(IMDB.getMoviesByDate, Config.REGAL_UNION_SQUARE)
+    Config.REGAL_UNION_SQUARE: partial(IMDB.getMoviesByDate, Config.REGAL_UNION_SQUARE),
+    Config.BAM: partial(IMDB.getMoviesByDate, Config.BAM)
 }
 
 EXPLORE_METHODS_SHORT = {
@@ -86,7 +88,8 @@ def exlporeMovieByDate(date):
 
 def exploreByTheater(movies):
     # Step 1: remove have seen, time-not-available movies
-    movies = filter(Filter.byAvailableTime, map(Filter.filterShowTimes, movies))
+    movies = filter(Filter.filterShowTimes, movies)
+    movies = filter(Filter.byAvailableTime, movies)
     movies = filter(HAVE_SEENS, movies)
 
     movies_complete = getCompleteMovies(movies)
@@ -118,7 +121,8 @@ def getCompleteMovies(movies):
     # print 'incomplete movies #: {0}'.format(len(movies_incomplete))
     # Step 3: query Douban/IMDB to fill incomplete movies
     for movie in movies_incomplete:
-        Douban.fillMovieInfo(movie)
+        # Douban Movie API is not available anymore
+        # Douban.fillMovieInfo(movie)
         IMDB.fillMovieInfo(movie)
         DatabaseManager.addMovie(movie)
         movies_complete.append(movie)
@@ -153,14 +157,16 @@ def main():
     sys.setdefaultencoding('utf8')
 
     # Get movies by day
-    date = '2018-07-08'
-    GoogleCalendar.deleteAllEventsByDate(date)
-    exlporeMovieByDate(date)
+    dates = [
+        '2019-07-02',
+    ]
+    for date in dates:
+        GoogleCalendar.deleteAllEventsByDate(date)
+        exlporeMovieByDate(date)
 
     # Get movies by series
-    # series_url = 'https://filmforum.org/series/michel-piccoli-series'
-    # exploreMovieBySeries('Michel Piccoli', series_url)
-
+    # series_url = 'https://filmforum.org/series/trilogies'
+    # exploreMovieBySeries('TRILOGIES', series_url)
 
 if __name__ == '__main__':
     main()

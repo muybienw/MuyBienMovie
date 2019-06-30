@@ -35,22 +35,20 @@ def getMoviesByDate(input_date):
 
     movies = []
 
-    print CALENDAR_URL;
-
     soup = Common.getPageSoup(CALENDAR_URL)
     daily_schedule = soup.find('li', {'id': tabId})
 
-    if daily_schedule is None:
+    if daily_schedule == None:
         print 'No movie schedule on {0} for Lincoln Center'.format(input_date)
+    else:
+        for film in daily_schedule.find_all('div', {'class': 'films'}):
+            movies.append(parseMovie(input_date, film))
+        print 'Found {0} movies from {1} on {2}'.format(len(movies), 'Lincoln Center', input_date)
 
-    for film in daily_schedule.find_all('div', {'class': 'films'}):
-        movies.append(parseMovie(input_date, film))
-
-    print 'Found {0} movies from {1} on {2}'.format(len(movies), 'Lincoln Center', input_date)
     return movies
 
 def main():
-    input_date = '2018-07-01'
+    input_date = '2018-09-07'
     print getMoviesByDate(input_date)
 
 

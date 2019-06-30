@@ -8,6 +8,7 @@ import sys
 import Common
 import Movie
 import copy
+import Util
 
 
 HOME_URL = 'https://filmforum.org/'
@@ -32,7 +33,7 @@ def parseDirectors(soup):
     return directors
 
 def parseMovieFromPage(soup, movie):
-    title = soup.find('h1', {'class': 'main-title'}).text
+    title = soup.find('h2', {'class': 'main-title'}).text
     production_info = soup.find('div', {'class': 'urgent'})
     directors = parseDirectors(production_info)
 
@@ -87,7 +88,8 @@ def getMoviesBySeries(series_name, series_url):
             # title and show link
             title_div = film.find('h1', {'class': 'title'})
             if title_div is not None and title_div.a is not None:
-                movie.title = title_div.a.text
+                # movie.title = title_div.a.text
+                movie.title = Util.removeDirectorNameFromTile(title_div.a.text)
                 movie.show_url = title_div.a['href']
                 # director
                 # film_page_soup = Common.getPageSoup(movie.show_url)
@@ -106,7 +108,7 @@ def getMoviesBySeries(series_name, series_url):
             movies.append(movie)
 
     movies_merged = mergeMovies(movies)
-    PickleManager.dump(series_name, movies_merged)
+    # PickleManager.dump(series_name, movies_merged)
 
     return movies_merged
 
@@ -125,8 +127,11 @@ def mergeMovies(movies):
     return movies_deduplicated
 
 def getMoviesByDate(input_date):
+    print input_date
     date = datetime.strptime(input_date, Movie.DATE_FORMAT)
     offset = date.date() - datetime.now().date()
+
+    print offset
 
     movies = []
 
@@ -147,13 +152,13 @@ def main():
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-    # date = '2018-02-01'
-    # movies = getMoviesByDate(date)
-    # print movies
+    date = '2019-04-14'
+    movies = getMoviesByDate(date)
+    print movies
 
     # series_url = 'https://filmforum.org/series/ingmar-bergman-centennial-retrospective-series#now-playing'
-    series_url = 'https://filmforum.org/series/michel-piccoli-series'
-    print getMoviesBySeries('Michel Piccoli', series_url)
+    # series_url = 'https://filmforum.org/series/trilogies'
+    # print getMoviesBySeries('Trilogies', series_url)
 
 
 if __name__ == '__main__':

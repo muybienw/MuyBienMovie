@@ -17,12 +17,13 @@ def getPageSoup(url, params={}):
     if r.status_code == 200:
         return BeautifulSoup(r.text, 'html.parser')
     else:
-        print '[Error] Cannot open page: {0}, status code: {1}'.format(url, r.status_code)
+        error = '[Error] Cannot open page: {}, status code: {}'
+        print error.format(url, r.status_code)
         return None
 
 def main():
     # url = 'https://www.amctheatres.com/movie-theatres/new-york-city/amc-empire-25/showtimes/all/2018-01-16/amc-empire-25/all'
-    url = 'http://www.imdb.com/showtimes/cinema/US/ci0010613?ref_=shlc_tny_th'
+    url = 'https://www.filmlinc.org/calendar/'
     print getPageSoup(url)
 
 if __name__ == '__main__':

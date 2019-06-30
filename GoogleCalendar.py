@@ -104,7 +104,7 @@ def putMovieOnCalendar(movie):
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    summary = movie.title if movie.douban_rating > 0 else '[?] ' + movie.title
+    summary = movie.title if movie.imdb_rating > 0 else '[?] ' + movie.title
 
     for showtime in movie.showtimes:
         endtime = showtime + timedelta(hours=2)
@@ -124,11 +124,9 @@ def putMovieOnCalendar(movie):
                 # {'email': 'mubin.w@gmail.com'},
             ],
         }
-        if movie.douban_rating >= 9.0:
+        if movie.imdb_rating >= 8.0:
             event['colorId'] = '6'  # red
-        elif movie.douban_rating >= 8.5:
-            event['colorId'] = '4'  # light red
-        elif movie.douban_rating >= 8.0:
+        elif movie.imdb_rating >= 7.5:
             event['colorId'] = '5'  # orange
 
         response = service.events().insert(calendarId='primary', body=event).execute()
@@ -139,7 +137,7 @@ def putMovieOnSpecificCalendar(movie, calendarId):
     service = discovery.build('calendar', 'v3', http=http)
 
     # prepare the calendar event
-    summary = movie.title if movie.douban_rating > 0 else '[?] ' + movie.title
+    summary = movie.title if movie.imdb_rating > 0 else '[?] ' + movie.title
 
     for i in xrange(len(movie.showtimes)):
         showtime = movie.showtimes[i]
@@ -160,12 +158,10 @@ def putMovieOnSpecificCalendar(movie, calendarId):
                 # {'email': 'mubin.w@gmail.com'},
             ],
         }
-        if movie.douban_rating >= 8.5:
-            event['colorId'] = '6'  # red-ish color
-        elif movie.douban_rating >= 8.0:
-            event['colorId'] = '5'  # orange-ish color
-        elif movie.imdb_rating >= 8.0:
-            event['colorId'] = '4'  # ???
+        if movie.imdb_rating >= 8.0:
+            event['colorId'] = '6'  # red
+        elif movie.imdb_rating >= 7.5:
+            event['colorId'] = '5'  # orange
 
         if i == len(movie.showtimes) - 1:
             event['summary'] = '[!]' + event['summary']

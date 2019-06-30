@@ -60,6 +60,10 @@ THEATERS = {
         'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci12617789/{0}',
         'full_name': 'Film Society Lincoln Center - Elinor Bunin Munroe Film Center',
     },
+    Config.BAM: {
+        'imdb_url': 'https://www.imdb.com/showtimes/cinema/US/ci0010119/{0}',
+        'full_name': 'BAM Rose Cinemas',
+    },
 }
 
 def parseMovie(theater_str, input_date, movie_div):
@@ -162,14 +166,10 @@ def searchMoviePageByTitle(movie):
 
 
 def main():
-    # date = '2018-01-19'
-    # getMoviesByDate(Config.CINEPOLIS, date)
+    date = '2019-04-08'
+    movies = getMoviesByDate(Config.BAM, date)
 
-    movie = Movie.Movie()
-    movie.title = 'Ashes of Time Redux'
-    movie.year = '2018'
-
-    print fillMovieInfo(movie)
+    print movies
 
 if __name__ == '__main__':
     main()

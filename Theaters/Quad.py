@@ -39,14 +39,18 @@ def getMoviesByDate(input_date):
 
     movies = []
 
-    for movie_soup in Common.getPageSoup(HOME_PAGE_URL).find('div', {'class': tabClass}).find_all('div', {'class': 'grid-item'}):
+    tabSoup = Common.getPageSoup(HOME_PAGE_URL).find('div', {'class': tabClass})
+    if not tabSoup:
+        return movies
+
+    for movie_soup in tabSoup.find_all('div', {'class': 'grid-item'}):
         movies.append(parseMovie(input_date, movie_soup))
 
     print 'Found {0} movies from {1} on {2}'.format(len(movies), 'Quad Cinema', input_date)
     return movies
 
 def main():
-    date = '2018-07-01'
+    date = '2018-08-24'
     print getMoviesByDate(date)
 
 
