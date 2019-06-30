@@ -124,6 +124,8 @@ def getMoviesByDate(theater_str, input_date):
 
     for movie_div in showtimes.find_all('div', {'class': 'list_item'}):
         movies.append(parseMovie(theater_str, input_date, movie_div))
+
+    print 'Found {0} movies from {1} on {2}'.format(len(movies), theater_str, input_date)
     return movies
 
 def fillMovieInfo(movie):

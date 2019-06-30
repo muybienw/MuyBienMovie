@@ -161,8 +161,8 @@ def main():
     # Get movies by day
     dates = [
         # '2019-07-04',
-        '2019-07-05',
-        # '2019-07-06',
+        # '2019-07-05',
+        '2019-07-06',
     ]
     for date in dates:
         GoogleCalendar.deleteAllEventsByDate(date)

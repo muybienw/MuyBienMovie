@@ -21,7 +21,6 @@ SERIES_PAGE_DATE_FORMAT = '%A, %B %d'
 # input: the soup created by the 'urgent' container on the movie page
 def parseDirectors(soup):
     if soup is None:
-        print 'looks like we cannot find the directors for this movie...'
         return
 
     directors = []
@@ -127,11 +126,8 @@ def mergeMovies(movies):
     return movies_deduplicated
 
 def getMoviesByDate(input_date):
-    print input_date
     date = datetime.strptime(input_date, Movie.DATE_FORMAT)
     offset = date.date() - datetime.now().date()
-
-    print offset
 
     movies = []
 

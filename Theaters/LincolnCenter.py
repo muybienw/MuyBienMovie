@@ -48,7 +48,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    input_date = '2018-09-07'
+    input_date = '2019-07-05'
     print getMoviesByDate(input_date)
 
 

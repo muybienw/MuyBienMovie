@@ -48,8 +48,6 @@ def getMoviesByDate(input_date):
 
     week_day_name = str(date.strftime('%a')).lower()
 
-    print(week_day_name)
-
     movies = []
 
     for movie_soup in Common.getPageSoup(HOME_PAGE_URL).find('div', {'class': week_day_name})\
