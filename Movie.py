@@ -26,6 +26,7 @@ class Movie:
         self.douban_rating = None
         self.imdb_rating = None
         self.douban_url = None
+        self.imdb_url = None
         self.year = None
         self.douban_year = None
         self.imdb_year = None
@@ -55,6 +56,8 @@ class Movie:
             info += 'imdb_rating: ' + str(self.imdb_rating) + '\n'
         if self.douban_url:
             info += 'douban_url: ' + self.douban_url + '\n'
+        if self.imdb_url:
+            info += 'imdb_url: ' + self.imdb_url + '\n'
         if self.year:
             info += 'year: ' + self.year + '\n'
         if self.douban_year:
@@ -93,6 +96,8 @@ class Movie:
             info += 'imdb_rating: ' + str(self.imdb_rating) + '\n'
         if self.douban_url:
             info += 'douban_url: ' + self.douban_url + '\n'
+        if self.imdb_url:
+            info += 'imdb_url: ' + self.imdb_url + '\n'
         if self.year:
             info += 'year: ' + self.year + '\n'
         if self.douban_year:

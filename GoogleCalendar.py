@@ -124,6 +124,7 @@ def putMovieOnCalendar(movie):
                 # {'email': 'mubin.w@gmail.com'},
             ],
         }
+
         if movie.imdb_rating >= 8.0:
             event['colorId'] = '6'  # red
         elif movie.imdb_rating >= 7.5:

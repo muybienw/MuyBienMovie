@@ -11,6 +11,9 @@ HOME_PREFIX = 'http://www.imdb.com/'
 FILM_PAGE_PREFIX = 'http://www.imdb.com/title/'
 SEARCH_PREFIX = 'http://www.imdb.com/find'
 
+OMDB_KEY = '9e865ca2' # registered with 523219531@qq.com
+OMDB_URL = 'http://www.omdbapi.com/'
+
 THEATERS = {
     Config.AMC25: {
         'imdb_url': 'http://www.imdb.com/showtimes/cinema/US/ci0010613/{0}',
@@ -124,26 +127,24 @@ def getMoviesByDate(theater_str, input_date):
     return movies
 
 def fillMovieInfo(movie):
-    # find movie link first from search, using movie title
-    imdb_url = searchMoviePageByTitle(movie)
-    if imdb_url is None:
+    if not movie.title:
+        print("Movie has not title, abort!")
+        return movie
+    movie_json = findMovieByTitleOmdb(movie.title.encode('utf-8'))
+
+    if 'Error' in movie_json:
+        print("Movie not found: " + movie.title)
         return movie
 
-    # fill in imdb info
-    movie.imdb_url = imdb_url
-    soup = Common.getPageSoup(imdb_url)
+    movie.imdb_rating = float(movie_json['imdbRating']) if isFloat(movie_json['imdbRating']) else 0
+    movie.imdb_id = movie_json['imdbID']
+    movie.imdb_url = 'https://www.imdb.com/title/' + movie_json['imdbID']
+    movie.addDirectors(movie_json['Director'])
 
-    rating_span = soup.find('span', {'itemprop': 'ratingValue'})
-    if rating_span is not None:
-        movie.imdb_rating = float(rating_span.text)
-
-    year_span =  soup.find('span', {'id': 'titleYear'})
-    if year_span is not None:
-        movie.imdb_year =year_span.a.text
-
-    # director = soup.find('span', {'itemprop': 'director'}).a.text
+    return movie
 
 # Returns the imdb url
+# This method is deprecated
 def searchMoviePageByTitle(movie):
     payload = {'q': movie.title.encode('utf-8'), 's': 'tt'}
     soup = Common.getPageSoup(SEARCH_PREFIX, params=payload)
@@ -165,11 +166,24 @@ def searchMoviePageByTitle(movie):
     return None
 
 
-def main():
-    date = '2019-04-08'
-    movies = getMoviesByDate(Config.BAM, date)
+def findMovieByTitleOmdb(movie_title):
+    print("Looking up info for movie title: " + movie_title)
+    params = {'apikey': OMDB_KEY, 't': movie_title}
+    response = requests.get(url=OMDB_URL, params=params)
 
-    print movies
+    return response.json()
+
+def isFloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+def main():
+    movie_json = findMovieByTitleOmdb('the chambermaid')
+    print movie_json
 
 if __name__ == '__main__':
     main()

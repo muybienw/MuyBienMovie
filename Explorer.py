@@ -113,9 +113,10 @@ def getCompleteMovies(movies):
         saved = DatabaseManager.getMovie(movie)
         if saved is None:
             movies_incomplete.append(movie)
-        else:
-            fillMovieInfoWithSavedMovie(movie, saved)
-            movies_complete.append(movie)
+        # TODO: re-enable loading from database after a while
+        # else:
+        #     fillMovieInfoWithSavedMovie(movie, saved)
+        #     movies_complete.append(movie)
 
     # print 'complete movies #: {0}'.format(len(movies_complete))
     # print 'incomplete movies #: {0}'.format(len(movies_incomplete))
@@ -124,7 +125,8 @@ def getCompleteMovies(movies):
         # Douban Movie API is not available anymore
         # Douban.fillMovieInfo(movie)
         IMDB.fillMovieInfo(movie)
-        DatabaseManager.addMovie(movie)
+        # TODO: re-enable writing to database after a while
+        # DatabaseManager.addMovie(movie)
         movies_complete.append(movie)
 
     return movies_complete
@@ -158,7 +160,9 @@ def main():
 
     # Get movies by day
     dates = [
-        '2019-07-02',
+        # '2019-07-04',
+        '2019-07-05',
+        # '2019-07-06',
     ]
     for date in dates:
         GoogleCalendar.deleteAllEventsByDate(date)
