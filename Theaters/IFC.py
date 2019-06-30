@@ -40,16 +40,19 @@ def parseMovie(input_date, movie_soup):
 def getMoviesByDate(input_date):
     date = datetime.strptime(input_date, Movie.DATE_FORMAT)
     today = date.today()
-    offset = date.day - today.day
+    delta = date.date() - today.date()
+    offset = delta.days
 
     if offset > 6:
         print 'Cannot get movies more than a week later: ' + input_date
 
     week_day_name = str(date.strftime('%a')).lower()
 
+    print(week_day_name)
+
     movies = []
 
-    for movie_soup in Common.getPageSoup(HOME_PAGE_URL).find('div', {'class': ['daily-schedule', week_day_name]})\
+    for movie_soup in Common.getPageSoup(HOME_PAGE_URL).find('div', {'class': week_day_name})\
             .find('ul').findChildren(recursive=False):
         try:
             movie = parseMovie(input_date, movie_soup)
@@ -61,7 +64,7 @@ def getMoviesByDate(input_date):
     return movies
 
 def main():
-    date = '2018-07-01'
+    date = '2019-07-04'
     print getMoviesByDate(date)
 
 
